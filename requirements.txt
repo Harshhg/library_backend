@@ -1,0 +1,7 @@
+django
+djangorestframework
+psycopg2-binary
+django-environ
+python-dotenv
+gunicorn
+importlib-metadata==4.13.0

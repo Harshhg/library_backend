@@ -1,0 +1,23 @@
+FROM nginx
+COPY nginx.conf /etc/nginx/conf.d/
+
+RUN ln -sf /dev/stdout /var/log/nginx/access.log \
+    && ln -sf /dev/stderr /var/log/nginx/error.log
+RUN apt-get update && apt-get -y install python3-pip
+
+RUN mkdir -p /var/app/library_backend
+COPY manage.py requirements.txt start-server.sh /var/app/library_backend/
+
+COPY . /var/app/library_backend/
+
+WORKDIR /var/app/library_backend
+RUN pip install -r requirements.txt
+
+RUN python3 manage.py collectstatic --noinput
+
+RUN chown -R www-data:www-data /var/app/library_backend
+
+# start server
+EXPOSE 8000
+STOPSIGNAL SIGTERM
+CMD ["/var/app/library_backend/start-server.sh"]
